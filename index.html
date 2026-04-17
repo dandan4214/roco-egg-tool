@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#6366f1">
+  <title>洛克王国世界 - 孵蛋查询</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="manifest" href="manifest.json">
+</head>
+<body>
+  <div class="container">
+    <div class="top-bar">
+      <div class="back" id="backBtn" onclick="goBack()">◀ 返回</div>
+      <div class="app-logo" id="appLogo">🥚</div>
+      <div class="app-title" id="appTitle">孵蛋指南</div>
+      <div class="search-btn" id="searchToggle" onclick="toggleSearch()">🔍</div>
+      <div class="title hide" id="pageTitle">蛋组总览</div>
+      <div class="search-results" id="searchResults"></div>
+
+      <div class="search-overlay hide" id="searchOverlay">
+        <div class="search-box">
+          <span>🔍</span>
+          <input type="text" id="searchInput" placeholder="搜索精灵名称..." autocomplete="off">
+        </div>
+        <div class="search-close" onclick="toggleSearch()">✕</div>
+      </div>
+    </div>
+    
+    <div id="view-home" class="view">
+      <div style="padding: 20px 16px 10px;">
+        <div style="font-size: 17px; font-weight: 600; color: #323233; margin-bottom: 4px;">🥚 孵蛋蛋组查询</div>
+        <p style="font-size: 12px; color: #969799; margin-top: 4px;">点击蛋组查看所有精灵 · 部分精灵可属于多个蛋组</p>
+      </div>
+      <div class="group-grid" id="homeGroupGrid"></div>
+    </div>
+    
+    <div id="view-group" class="view hide">
+      <div class="card" style="margin-bottom: 0; border-radius: 0 0 12px 12px;">
+        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 4px;">
+          <div id="groupIcon" class="group-icon" style="font-size: 20px;"></div>
+          <div>
+            <div style="font-size: 16px; font-weight: 600;" id="groupTitle"></div>
+            <div style="font-size: 12px; color: #969799; margin-top: 2px;" id="groupCount"></div>
+          </div>
+        </div>
+        <div class="status-bar status-ok" id="groupStatus">
+          <span>✅</span><span>同蛋组精灵可以互相配对孵蛋</span>
+        </div>
+      </div>
+      <div class="pet-grid" id="groupPetGrid"></div>
+    </div>
+    
+    <div id="view-pet" class="view hide">
+      <div class="card" id="petCard">
+        <div class="selected-pet">
+          <div class="img-wrap"><img id="r-img" src="" alt=""></div>
+          <div class="info">
+            <div class="name" id="r-name">精灵名称</div>
+            <div class="no" id="r-no">NO.001</div>
+          </div>
+          <div class="tag-row" id="r-tag"></div>
+        </div>
+        <div class="multi-tag-note" id="r-multi-note"></div>
+        <div class="status-bar" id="r-status">
+          <span>✅</span><span>该精灵可以参与孵蛋</span>
+        </div>
+        <div id="partnerSection">
+          <div class="section-subtitle">同蛋组可配对精灵（点击切换）</div>
+          <div class="partner-grid" id="partnerGrid"></div>
+        </div>
+      </div>
+    </div>
+    
+    <div id="view-search" class="view hide">
+      <div class="card">
+        <div class="card-title">🔥 热门精灵</div>
+        <div class="quick-pets" id="quickPets"></div>
+      </div>
+      <div class="empty-state" id="searchEmpty">
+        <div class="icon egg-shake">🥚</div>
+        <p>在顶部输入精灵名称<br>查看蛋组与可配对对象</p>
+      </div>
+      <div class="card hide" id="searchResultCard">
+        <div class="selected-pet">
+          <div class="img-wrap"><img id="s-img" src="" alt=""></div>
+          <div class="info">
+            <div class="name" id="s-name">精灵名称</div>
+            <div class="no" id="s-no">NO.001</div>
+          </div>
+          <div class="tag-row" id="s-tag"></div>
+        </div>
+        <div class="multi-tag-note" id="s-multi-note"></div>
+        <div class="status-bar" id="s-status">
+          <span>✅</span><span>该精灵可以参与孵蛋</span>
+        </div>
+        <div id="s-partnerSection">
+          <div class="section-subtitle">同蛋组可配对精灵（点击切换）</div>
+          <div class="partner-grid" id="s-partnerGrid"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 视图5: 异色传递 -->
+    <div id="view-shiny" class="view hide">
+      <div class="shiny-header">
+        <h2>✨ 异色传递查询</h2>
+        <p>输入你拥有的异色宠物，查看能点亮哪些异色</p>
+      </div>
+
+      <div class="card">
+        <div class="card-title">📝 添加已有异色</div>
+        <div class="gender-select">
+          <div class="gender-btn active" data-g="公" onclick="selectShinyGender(this)">公 ♂</div>
+          <div class="gender-btn" data-g="母" onclick="selectShinyGender(this)">母 ♀</div>
+        </div>
+
+        <div style="font-size: 12px; color: #969799; margin: 10px 0 6px;">点击选择已有的异色精灵</div>
+        <div class="shiny-pick-grid" id="shinyPickGrid"></div>
+
+        <div id="shinyOwnedWrap" style="margin-top: 12px;">
+          <div class="owned-list" id="shinyOwnedList"></div>
+          <div style="font-size: 12px; color: #969799;" id="shinyOwnedTip">尚未添加任何异色宠物</div>
+        </div>
+      </div>
+
+      <div class="card hide" id="shinyResultCard">
+        <div class="card-title">📊 计算结果</div>
+        <div class="stat-row">
+          <div class="stat-box">
+            <div class="num" id="stat-owned">0</div>
+            <div class="label">已有</div>
+          </div>
+          <div class="stat-box">
+            <div class="num" id="stat-light">0</div>
+            <div class="label">可点亮</div>
+          </div>
+          <div class="stat-box">
+            <div class="num" id="stat-miss">0</div>
+            <div class="label">仍缺</div>
+          </div>
+        </div>
+        <div class="status-bar status-ok" id="shinyCollectStatus" style="margin-bottom: 10px;">
+          <span>✅</span><span>可全收集</span>
+        </div>
+
+        <div style="margin-bottom: 10px;">
+          <div style="font-size: 13px; font-weight: 500; margin-bottom: 8px;">🔥 可点亮异色</div>
+          <div class="shiny-grid" id="shinyLightGrid"></div>
+        </div>
+
+        <div>
+          <div style="font-size: 13px; font-weight: 500; margin-bottom: 8px;">🚫 缺失异色</div>
+          <div class="shiny-grid" id="shinyMissGrid"></div>
+        </div>
+      </div>
+
+      <div class="card hide" id="shinyTargetCard">
+        <div class="card-title">🎯 目标最短孵化链</div>
+        <div class="search-box" style="margin-bottom: 10px;">
+          <span>🔍</span>
+          <input type="text" id="shinyTargetInput" placeholder="输入想获得的异色..." autocomplete="off">
+        </div>
+        <div class="search-results" id="shinyTargetResults" style="position: relative; top: 0; left: 0; right: 0; margin-top: 6px;"></div>
+        <div id="shinyChainBox"></div>
+      </div>
+
+      <div class="card hide" id="shinyRouteCard">
+        <div class="card-title">🗺️ 全体补充路线</div>
+        <div id="shinyRouteBox"></div>
+      </div>
+    </div>
+
+    <div class="footer-note">温泉蛋出品</div>
+  </div>
+
+  <div class="tab-bar">
+    <div class="tab-item active" id="tab-home" onclick="switchTab('home')">
+      <span class="tab-icon">🏠</span><span>首页</span>
+    </div>
+    <div class="tab-item" id="tab-search" onclick="switchTab('search')">
+      <span class="tab-icon">🔍</span><span>搜索</span>
+    </div>
+    <div class="tab-item" id="tab-shiny" onclick="switchTab('shiny')">
+      <span class="tab-icon">✨</span><span>异色</span>
+    </div>
+  </div>
+
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('sw.js');
+    }
+  </script>
+</body>
+</html>
