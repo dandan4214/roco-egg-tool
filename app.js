@@ -232,7 +232,7 @@
   
     
     // ========== 异色传递功能 ==========
-    let shinyOwned = []; // {name, gender}
+    let shinyOwned = JSON.parse(localStorage.getItem('roco_shiny_owned') || '[]'); // {name, gender}
     let selectedGender = '公';
     let lastShinyResult = null;
 
@@ -277,6 +277,16 @@
     }
     renderShinyPickGrid();
 
+    // 恢复本地保存的异色数据
+    if (shinyOwned.length > 0) {
+      renderShinyOwnedList();
+      calculateShiny();
+    }
+
+    function saveShinyOwned() {
+      localStorage.setItem('roco_shiny_owned', JSON.stringify(shinyOwned));
+    }
+
     function toggleShinyOwned(name) {
       const idx = shinyOwned.findIndex(o => o.name === name && o.gender === selectedGender);
       if (idx >= 0) {
@@ -286,6 +296,7 @@
       }
       renderShinyPickGrid();
       renderShinyOwnedList();
+      saveShinyOwned();
       if (shinyOwned.length > 0) calculateShiny();
       else {
         document.getElementById('shinyResultCard').classList.add('hide');
@@ -300,6 +311,7 @@
         shinyOwned.splice(idx, 1);
         renderShinyPickGrid();
         renderShinyOwnedList();
+        saveShinyOwned();
         if (shinyOwned.length > 0) calculateShiny();
         else {
           document.getElementById('shinyResultCard').classList.add('hide');
