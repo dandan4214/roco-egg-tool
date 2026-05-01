@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>头像</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      background: #f2f3f5;
+    }
+    .avatar {
+      width: 300px;
+      height: 300px;
+      background: #faf8f5;
+      border-radius: 50%;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.08);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    /* 温泉蛋图形 */
+    .egg {
+      position: relative;
+      width: 140px;
+      height: 170px;
+      background: #fff;
+      border-radius: 50% 50% 50% 50% / 55% 55% 45% 45%;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    /* 蛋黄 */
+    .yolk {
+      width: 60px;
+      height: 60px;
+      background: #f5a623;
+      border-radius: 50%;
+      position: relative;
+      top: 8px;
+    }
+    /* 热气 */
+    .steam {
+      position: absolute;
+      width: 6px;
+      background: #ddd;
+      border-radius: 3px;
+      opacity: 0.5;
+    }
+    .steam.s1 { height: 24px; top: 55px; left: 110px; transform: rotate(-12deg); }
+    .steam.s2 { height: 18px; top: 60px; left: 135px; transform: rotate(8deg); }
+    .steam.s3 { height: 20px; top: 58px; left: 160px; transform: rotate(-5deg); }
+  </style>
+</head>
+<body>
+  <div class="avatar">
+    <div class="steam s1"></div>
+    <div class="steam s2"></div>
+    <div class="steam s3"></div>
+    <div class="egg">
+      <div class="yolk"></div>
+    </div>
+  </div>
+</body>
+</html>

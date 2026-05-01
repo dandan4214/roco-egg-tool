@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>小红书封面生成</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: #f5f5f5;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Microsoft YaHei", sans-serif;
+    }
+    .tip {
+      margin-bottom: 12px;
+      color: #666;
+      font-size: 14px;
+    }
+    /* 小红书封面 3:4 比例 */
+    .cover {
+      width: 900px;
+      height: 1200px;
+      background: linear-gradient(160deg, #6366f1 0%, #8b5cf6 40%, #a78bfa 70%, #c4b5fd 100%);
+      border-radius: 24px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 20px 60px rgba(99, 102, 241, 0.3);
+    }
+    /* 装饰圆 */
+    .cover::before {
+      content: '';
+      position: absolute;
+      width: 600px;
+      height: 600px;
+      background: rgba(255,255,255,0.08);
+      border-radius: 50%;
+      top: -200px;
+      right: -200px;
+    }
+    .cover::after {
+      content: '';
+      position: absolute;
+      width: 400px;
+      height: 400px;
+      background: rgba(255,255,255,0.06);
+      border-radius: 50%;
+      bottom: -100px;
+      left: -100px;
+    }
+    /* 顶部标签 */
+    .top-badge {
+      position: absolute;
+      top: 50px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(255,255,255,0.2);
+      backdrop-filter: blur(10px);
+      padding: 10px 32px;
+      border-radius: 30px;
+      color: #fff;
+      font-size: 24px;
+      font-weight: 600;
+      letter-spacing: 2px;
+      border: 1px solid rgba(255,255,255,0.3);
+    }
+    /* 主标题 */
+    .main-title {
+      position: absolute;
+      top: 140px;
+      left: 0;
+      right: 0;
+      text-align: center;
+      color: #fff;
+      z-index: 2;
+    }
+    .main-title h1 {
+      font-size: 72px;
+      font-weight: 800;
+      line-height: 1.2;
+      text-shadow: 0 4px 20px rgba(0,0,0,0.15);
+      letter-spacing: 4px;
+    }
+    .main-title .sub {
+      font-size: 36px;
+      font-weight: 500;
+      margin-top: 16px;
+      opacity: 0.95;
+      letter-spacing: 6px;
+    }
+    /* 手机 mockup */
+    .phone-mockup {
+      position: absolute;
+      bottom: 180px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 500px;
+      height: 520px;
+      background: #fff;
+      border-radius: 36px;
+      box-shadow: 0 30px 80px rgba(0,0,0,0.25);
+      padding: 20px 24px;
+      z-index: 2;
+    }
+    .phone-notch {
+      width: 120px;
+      height: 24px;
+      background: #e5e7eb;
+      border-radius: 12px;
+      margin: 0 auto 16px;
+    }
+    .phone-content {
+      background: #f7f8fa;
+      border-radius: 20px;
+      height: calc(100% - 40px);
+      padding: 16px;
+      overflow: hidden;
+    }
+    .phone-top {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+    .phone-emoji {
+      width: 36px;
+      height: 36px;
+      background: linear-gradient(135deg, #6366f1, #8b5cf6);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+    }
+    .phone-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: #323233;
+    }
+    .phone-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .phone-chip {
+      background: #fff;
+      border-radius: 16px;
+      padding: 8px 14px;
+      font-size: 13px;
+      color: #323233;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+    }
+    .phone-chip .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+    }
+    .phone-chip .dot.m { background: #3b82f6; }
+    .phone-chip .dot.f { background: #ec4899; }
+    .phone-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 8px;
+      margin-top: 12px;
+    }
+    .phone-grid-item {
+      aspect-ratio: 1;
+      background: #fff;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+    }
+    .phone-grid-item.sel {
+      border: 2px solid #6366f1;
+      position: relative;
+    }
+    .phone-grid-item.sel::after {
+      content: '';
+      position: absolute;
+      top: 4px;
+      right: 4px;
+      width: 10px;
+      height: 10px;
+      background: #6366f1;
+      border-radius: 50%;
+    }
+    /* 底部卖点 */
+    .features {
+      position: absolute;
+      bottom: 60px;
+      left: 0;
+      right: 0;
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      z-index: 2;
+    }
+    .feature-tag {
+      background: rgba(255,255,255,0.25);
+      backdrop-filter: blur(10px);
+      padding: 12px 28px;
+      border-radius: 30px;
+      color: #fff;
+      font-size: 22px;
+      font-weight: 600;
+      border: 1px solid rgba(255,255,255,0.35);
+    }
+    /* 截图提示 */
+    .screenshot-guide {
+      margin-top: 20px;
+      background: #fff;
+      padding: 16px 24px;
+      border-radius: 12px;
+      max-width: 900px;
+      color: #333;
+      font-size: 14px;
+      line-height: 1.8;
+    }
+    .screenshot-guide code {
+      background: #f0f0f0;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-family: monospace;
+    }
+  </style>
+</head>
+<body>
+  <div class="tip">以下区域就是小红书封面（3:4 比例），请用系统截图工具截取蓝色封面区域</div>
+
+  <div class="cover" id="cover">
+    <div class="top-badge">🔥 玩家自制工具</div>
+
+    <div class="main-title">
+      <h1>洛克王国</h1>
+      <div class="sub">孵蛋配对查询</div>
+    </div>
+
+    <div class="phone-mockup">
+      <div class="phone-notch"></div>
+      <div class="phone-content">
+        <div class="phone-top">
+          <div class="phone-emoji">🥚</div>
+          <div class="phone-title">孵蛋指南</div>
+        </div>
+        <div class="phone-chips">
+          <div class="phone-chip"><span class="dot m"></span>雪影娃娃</div>
+          <div class="phone-chip"><span class="dot f"></span>立方人</div>
+          <div class="phone-chip"><span class="dot m"></span>红绒十字</div>
+          <div class="phone-chip"><span class="dot f"></span>恶魔狼</div>
+        </div>
+        <div class="phone-grid">
+          <div class="phone-grid-item">🐟</div>
+          <div class="phone-grid-item">🦉</div>
+          <div class="phone-grid-item">🌸</div>
+          <div class="phone-grid-item">⚽</div>
+          <div class="phone-grid-item">🐺</div>
+          <div class="phone-grid-item sel">🐻</div>
+          <div class="phone-grid-item">🌿</div>
+          <div class="phone-grid-item">🐛</div>
+          <div class="phone-grid-item">🐗</div>
+          <div class="phone-grid-item">⚡</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="features">
+      <div class="feature-tag">🆓 免费</div>
+      <div class="feature-tag">⚡ 自动计算</div>
+      <div class="feature-tag">📱 微信即用</div>
+    </div>
+  </div>
+
+  <div class="screenshot-guide">
+    <strong>📸 如何保存封面：</strong><br>
+    1. Mac: 按 <code>Command + Shift + 4</code>，框选蓝色封面区域截图<br>
+    2. Windows: 按 <code>Win + Shift + S</code>，框选蓝色封面区域截图<br>
+    3. 或者直接右键「另存为图片」（部分浏览器支持）<br><br>
+    保存后是 <strong>900x1200</strong> 像素，正好是小红书最佳封面尺寸。如果需要改文字或颜色，直接修改这个 HTML 文件里的内容即可。
+  </div>
+</body>
+</html>
